@@ -1,7 +1,7 @@
 <template>
   <div >
     <!-- <button >测试</button> -->
-    <img @mousedown="controlmousedown" @mouseup="controlmouseup" @mousemove="controlmousemove" :src="imagebuffer" />
+    <img ondragstart="return false" @mousedown="controlmousedown" @mouseup="controlmouseup" @mousemove="controlmousemove" :src="imagebuffer" />
   </div>
 </template>
 

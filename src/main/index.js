@@ -49,7 +49,7 @@ function createWindow () {
   mainWindow.on('closed', () => {
     mainWindow = null
   })
-  mainWindow.hide()
+  //mainWindow.hide()
   ipcMain.on("control",(event,arg) =>{
     
   
