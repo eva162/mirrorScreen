@@ -27,13 +27,14 @@ function createWindow () {
     fullscreen:false
   })
 
+  //设置帧率
   mainWindow.webContents.setFrameRate(30)
 
   mainWindow.webContents.on('paint', (event, dirty, image) => {
     let buffer = image.toJPEG(80)
     let base64 = buffer.toString("base64")
     controlWindow.webContents.send('image',base64)
-    console.log(dirty)
+    //console.log(dirty)
   })
 
   controlWindow = new BrowserWindow({
@@ -49,7 +50,7 @@ function createWindow () {
   mainWindow.on('closed', () => {
     mainWindow = null
   })
-  //mainWindow.hide()
+  mainWindow.hide()
   ipcMain.on("control",(event,arg) =>{
     
   
