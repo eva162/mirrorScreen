@@ -29,23 +29,13 @@ function createWindow() {
     fullscreen: false
   })
 
-<<<<<<< HEAD
   mainWindow.webContents.setFrameRate(1)
-=======
-  //设置帧率
-  mainWindow.webContents.setFrameRate(30)
->>>>>>> 1bda7c379990c8ee7b9421585f94421481f68c81
 
   mainWindow.webContents.on('paint', (event, dirty, image) => {
     let buffer = image.toJPEG(80)
     let base64 = buffer.toString("base64")
-<<<<<<< HEAD
     controlWindow.webContents.send('image', base64)
     console.log(dirty)
-=======
-    controlWindow.webContents.send('image',base64)
-    //console.log(dirty)
->>>>>>> 1bda7c379990c8ee7b9421585f94421481f68c81
   })
 
   controlWindow = new BrowserWindow({
