@@ -1,7 +1,11 @@
 <template>
   <div >
     <!-- <button >测试</button> -->
+<<<<<<< HEAD
     <img ondragstart='return false' @mousedown="controlmousedown" @mouseup="controlmouseup" @mousemove="controlmousemove" :src="imagebuffer" />
+=======
+    <img ondragstart="return false" @mousedown="controlmousedown" @mouseup="controlmouseup" @mousemove="controlmousemove" :src="imagebuffer" />
+>>>>>>> 1bda7c379990c8ee7b9421585f94421481f68c81
   </div>
 </template>
 
