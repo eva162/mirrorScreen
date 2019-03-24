@@ -51,12 +51,15 @@
     }
   },
   "dependencies": {
-    "vue": "^2.5.16",
     "axios": "^0.18.0",
+    "konva": "^3.2.3",
+    "vue": "^2.5.16",
     "vue-electron": "^1.0.6",
+    "vue-konva": "^2.0.3",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1",
-    "vuex-electron": "^1.0.0"
+    "vuex-electron": "^1.0.0",
+    "ws": "^6.2.0"
   },
   "devDependencies": {
     "ajv": "^6.5.0",
