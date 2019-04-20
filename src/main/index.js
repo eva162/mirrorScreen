@@ -24,12 +24,12 @@ function createWindow() {
     useContentSize: true,
     width: 1920,
     webPreferences: {
-      offscreen: true
+      offscreen: false
     },
     fullscreen: false
   })
 
-  mainWindow.webContents.setFrameRate(1)
+ // mainWindow.webContents.setFrameRate(1)
 
   mainWindow.webContents.on('paint', (event, dirty, image) => {
     let buffer = image.toJPEG(80)
@@ -38,20 +38,21 @@ function createWindow() {
     console.log(dirty)
   })
 
-  controlWindow = new BrowserWindow({
-    height: 1000,
-    useContentSize: true,
-    width: 1920,
-    fullscreen: false
-  })
+  // controlWindow = new BrowserWindow({
+  //   height: 1000,
+  //   useContentSize: true,
+  //   width: 1920,
+  //   fullscreen: false
+  // })
 
-  mainWindow.loadURL("https://github.com/websockets/ws#sending-binary-data")
-  controlWindow.loadURL(winURL + "#controlpage")
+  //mainWindow.loadURL("https://github.com/websockets/ws#sending-binary-data")
+  mainWindow.loadURL(winURL)
+  // controlWindow.loadURL(winURL + "#controlpage")
 
   mainWindow.on('closed', () => {
     mainWindow = null
   })
-  mainWindow.hide()
+  //mainWindow.hide()
   ipcMain.on("control", (event, arg) => {
 
 
@@ -69,34 +70,34 @@ app.on('ready', createWindow)
 
 let conter = 0
 
-let websocket = new Websocket(`ws://127.0.0.1:5000/Eink`)
+// let websocket = new Websocket(`ws://127.0.0.1:5000/Eink`)
 
-websocket.on('open', function () {
-  console.log('opened')
-  let rdata = CreateRequestBuffer(7)
-  websocket.send(rdata)
-});
+// websocket.on('open', function () {
+//   console.log('opened')
+//   let rdata = CreateRequestBuffer(7)
+//   websocket.send(rdata)
+// });
 
-websocket.on('message', function (data) {
-  console.log(data)
-  if (data &&
-    Buffer.isBuffer(data) &&
-    data.length > 7
-    && data[0] == 0xaa) {
-    //接受消息
-    switch (data[1]) {
-      //心跳
-      case 1:
-        //回复心跳
-        let rdata = CreateRequestBuffer(1)
-        websocket.send(rdata)
-        break;
-      
-    }
+// websocket.on('message', function (data) {
+//   console.log(data)
+//   if (data &&
+//     Buffer.isBuffer(data) &&
+//     data.length > 7
+//     && data[0] == 0xaa) {
+//     //接受消息
+//     switch (data[1]) {
+//       //心跳
+//       case 1:
+//         //回复心跳
+//         let rdata = CreateRequestBuffer(1)
+//         websocket.send(rdata)
+//         break;
 
-  }
+//     }
 
-});
+//   }
+
+// });
 
 //创建报文
 function CreateRequestBuffer(comm, Content) {

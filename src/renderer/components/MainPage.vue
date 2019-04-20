@@ -97,7 +97,7 @@
         imageList: [], // 图片列表
         textList: [], // 文本列表
         cacheList: [], // image缓存列表
-        cacheListCount: 199, // image缓存个数
+        cacheListCount: 100, // image缓存个数
         scale: 1, // 缩放
         stage: null, // 舞台
         imageLayer: null, // 图层
