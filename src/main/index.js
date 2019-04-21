@@ -11,12 +11,15 @@ if (process.env.NODE_ENV !== 'development') {
 }
 
 let mainWindow, controlWindow
+let websocket = new Websocket(`ws://127.0.0.1:5000/Eink`)
+
 const winURL = process.env.NODE_ENV === 'development'
   ? `http://localhost:9080`
   : `file://${__dirname}/index.html`
 
 function createWindow() {
-  /**
+
+   /**
    * Initial window options
    */
   mainWindow = new BrowserWindow({
@@ -24,35 +27,45 @@ function createWindow() {
     useContentSize: true,
     width: 1920,
     webPreferences: {
-      offscreen: false
+      offscreen: true
     },
     fullscreen: false
   })
 
- // mainWindow.webContents.setFrameRate(1)
 
-  mainWindow.webContents.on('paint', (event, dirty, image) => {
-    let buffer = image.toJPEG(80)
-    let base64 = buffer.toString("base64")
-    controlWindow.webContents.send('image', base64)
-    console.log(dirty)
+  controlWindow = new BrowserWindow({
+    height: 1000,
+    useContentSize: true,
+    width: 1920,
+    fullscreen: false
   })
-
-  // controlWindow = new BrowserWindow({
-  //   height: 1000,
-  //   useContentSize: true,
-  //   width: 1920,
-  //   fullscreen: false
-  // })
 
   //mainWindow.loadURL("https://github.com/websockets/ws#sending-binary-data")
   mainWindow.loadURL(winURL)
-  // controlWindow.loadURL(winURL + "#controlpage")
+  controlWindow.loadURL(winURL + "#controlpage")
+
+  mainWindow.webContents.on('paint', (event, dirty, image) => {
+    console.log(dirty)
+    let buffer = image.toJPEG(85)
+    let base64 = buffer.toString("base64")
+    controlWindow.webContents.send('image', base64)
+    let content = Buffer.allocUnsafe(8)
+    content.writeInt16BE(dirty.x,0)
+    content.writeInt16BE(dirty.y,2)
+    content.writeInt16BE(dirty.width,4)
+    content.writeInt16BE(dirty.height,6)
+    content = Buffer.concat([content,buffer]);
+    let rdata = CreateRequestBuffer(3,content)
+    websocket.send(rdata)
+
+    console.log('data send')
+  })
+  mainWindow.webContents.setFrameRate(1)
 
   mainWindow.on('closed', () => {
     mainWindow = null
   })
-  //mainWindow.hide()
+  mainWindow.hide()
   ipcMain.on("control", (event, arg) => {
 
 
@@ -70,37 +83,36 @@ app.on('ready', createWindow)
 
 let conter = 0
 
-// let websocket = new Websocket(`ws://127.0.0.1:5000/Eink`)
 
-// websocket.on('open', function () {
-//   console.log('opened')
-//   let rdata = CreateRequestBuffer(7)
-//   websocket.send(rdata)
-// });
+websocket.on('open', function () {
+  console.log('opened')
+  let rdata = CreateRequestBuffer(7)
+  websocket.send(rdata)
+});
 
-// websocket.on('message', function (data) {
-//   console.log(data)
-//   if (data &&
-//     Buffer.isBuffer(data) &&
-//     data.length > 7
-//     && data[0] == 0xaa) {
-//     //接受消息
-//     switch (data[1]) {
-//       //心跳
-//       case 1:
-//         //回复心跳
-//         let rdata = CreateRequestBuffer(1)
-//         websocket.send(rdata)
-//         break;
+websocket.on('message', function (data) {
+  //console.log(data)
+  if (data &&
+    Buffer.isBuffer(data) &&
+    data.length > 7
+    && data[0] == 0xaa) {
+    //接受消息
+    switch (data[1]) {
+      //心跳
+      case 1:
+        //回复心跳
+        let rdata = CreateRequestBuffer(1)
+        websocket.send(rdata)
+        break;
 
-//     }
+    }
 
-//   }
+  }
 
-// });
+});
 
 //创建报文
-function CreateRequestBuffer(comm, Content) {
+function CreateRequestBuffer(comm, content) {
   let conterHex = conter.toString(16)
   conterHex = conterHex.length % 2 == 0 ? conterHex : '0' + conterHex
   conterHex = conterHex.length > 2 ? conterHex : '00' + conterHex
@@ -108,8 +120,8 @@ function CreateRequestBuffer(comm, Content) {
   let cnt = Buffer.from(conterHex, "hex")
   rdata[1] = comm
   cnt.copy(rdata, 2, cnt.length - 2, cnt.length)
-  if(Content && Content.length > 0){
-
+  if(content && content.length > 0){
+    rdata = Buffer.concat([rdata,content]);
   }
   conter++
   return rdata
